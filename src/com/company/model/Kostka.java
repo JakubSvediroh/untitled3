@@ -14,4 +14,4 @@ public class Kostka {
     public int hod() {
         return random.nextInt(pocetSten)+1;
     }
-}0;
+}

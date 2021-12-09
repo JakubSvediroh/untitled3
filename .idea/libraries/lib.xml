@@ -1,13 +1,10 @@
 <component name="libraryTable">
   <library name="lib">
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../../../../JAVAFX/javafx-sdk-14.0.2.1/lib" />
+      <root url="file://$USER_HOME$/Downloads/openjfx-17.0.1_windows-x64_bin-sdk/javafx-sdk-17.0.1/lib" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="file://$PROJECT_DIR$/../../../../JAVAFX/javafx-sdk-14.0.2.1/lib" />
-    </SOURCES>
-    <jarDirectory url="file://$PROJECT_DIR$/../../../../JAVAFX/javafx-sdk-14.0.2.1/lib" recursive="false" />
-    <jarDirectory url="file://$PROJECT_DIR$/../../../../JAVAFX/javafx-sdk-14.0.2.1/lib" recursive="false" type="SOURCES" />
+    <SOURCES />
+    <jarDirectory url="file://$USER_HOME$/Downloads/openjfx-17.0.1_windows-x64_bin-sdk/javafx-sdk-17.0.1/lib" recursive="false" />
   </library>
 </component>
