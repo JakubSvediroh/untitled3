@@ -11,6 +11,11 @@ private Barva barva;
      barva = barva1;
 
     }
+
+    public boolean jeFigurka(Figurka f){
+        return cil.containsValue(f);
+    }
+
     public boolean mista(int kde) {
         return cil.containsKey(kde);
     }

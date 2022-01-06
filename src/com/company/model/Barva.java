@@ -4,7 +4,7 @@ public class Barva {
     private  int startpole;
     private  int cilpole;
     private  int poradi;
-    public int getporadi(){
+    public int getPoradi(){
         return poradi;
     }
 

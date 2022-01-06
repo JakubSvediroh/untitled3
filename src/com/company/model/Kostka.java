@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class Kostka {
 
-    private Random random;
+    private Random random = new Random();
 
     private int pocetSten;
 
