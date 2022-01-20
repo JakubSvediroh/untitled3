@@ -1,30 +1,46 @@
 package com.company.model;
-import java.util.*;
-public class CilDomecek {
-private Barva barva;
 
-    private Map <Integer, Figurka> cil =new HashMap<>();
-    public Map<Integer,Figurka> getCil(){
+public class CilDomecek
+{
+    private Hrac komuPatrim;
+
+    private Figurka[] cil;
+    private int pocetFigurek;
+
+    public CilDomecek(Hrac b, int pocFigurek) {
+        komuPatrim = b;
+        pocetFigurek = pocFigurek;
+
+        cil = new Figurka[pocFigurek];
+    }
+
+    public boolean jeVolno(int kde) {
+        return cil[kde] == null;
+    }
+
+    public void jitDoCile(Figurka kdo, int kam) {
+        cil[kam] = kdo;
+    }
+
+    public void posunVCili(Figurka kdo, int odkud, int kam) {
+        cil[kam] = kdo;
+        cil[odkud] = null;
+    }
+
+    public Figurka[] getCil() {
         return cil;
     }
-    public CilDomecek (Barva barva1,int pocetF){
-     barva = barva1;
 
-    }
+    public boolean mamTuhleFigurku(Figurka f) {
+        boolean ano = false;
 
-    public boolean jeFigurka(Figurka f){
-        return cil.containsValue(f);
-    }
-
-    public boolean mista(int kde) {
-        return cil.containsKey(kde);
-    }
-    public void DoDomecku(Figurka kdo,int kam){
-        cil.put(kam, kdo);
-        if (cil.size()==4){
+        for(int i = 0; i < cil.length; i++) {
+            if(cil[i] == f) {
+                ano = true;
+                break;
+            }
         }
-    }
-    public boolean Volno(int kde) {
-        return cil.containsKey(kde);
+
+        return ano;
     }
 }

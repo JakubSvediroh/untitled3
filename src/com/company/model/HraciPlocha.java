@@ -13,26 +13,30 @@ public class HraciPlocha {
 
     private int delkaPlochy;
 
-    private List<Barva> hraci = new ArrayList<>();
+    private List<Hrac> hraci = new ArrayList<>();
     private int pocetHracu;
 
-    public List<Barva> getHraci() {
+    public List<Hrac> getHraci() {
         return hraci;
     }
 
-    private Map<Barva, Startdomecek> domecky = new HashMap<>();
-    private Map<Barva, CilDomecek> cile = new HashMap<>();
+    private Map<Hrac, StartDomecek> domecky = new HashMap<>();
+    private Map<Hrac, CilDomecek> cile = new HashMap<>();
 
-    public Map<Barva, CilDomecek> getCile() {
+    public Map<Hrac, StartDomecek> getDomecky() {
+        return domecky;
+    }
+    public Map<Hrac, CilDomecek> getCile() {
         return cile;
     }
 
     private int pocetFigurek;
     private Kostka kostka;
-    private boolean byloHozeno;
-    private int hod;
+    private boolean hozeno;
+    private int naKostce;
+    private int znovu;
 
-    public Barva praveHraje;
+    public Hrac hrajiciHrac;
 
     public HraciPlocha(int vel, int pocFig, int pocHracu, Kostka k) {
         delkaPlochy = vel;
@@ -43,18 +47,17 @@ public class HraciPlocha {
         plocha = new Figurka[delkaPlochy];
 
         for(int i = 0; i < pocetHracu; i++) {
-            Barva novyHrac = new Barva(10 * i, spocitanaCesta(10 * i - 1), i);
+            Hrac novyHrac = new Hrac(i, 10 * i, spocitanaCesta(10 * i - 1));
 
             hraci.add(novyHrac);
 
-            domecky.put(novyHrac, new Startdomecek(novyHrac, pocetFigurek));
+            domecky.put(novyHrac, new StartDomecek(novyHrac, pocetFigurek));
             cile.put(novyHrac, new CilDomecek(novyHrac, pocetFigurek));
         }
 
-        praveHraje = hraci.get(2);
-
-        Figurka figs = new Figurka(hraci.get(2));
-        plocha[20] = figs;
+        hrajiciHrac = hraci.get(0);
+        hozeno = false;
+        znovu = 0;
     }
 
     public boolean jeVolno(int kde) {
@@ -66,70 +69,113 @@ public class HraciPlocha {
             return false;
         }
         else {
-            return plocha[kde].getBarva() == praveHraje;
+            return plocha[kde].getKomuPatrim() == hrajiciHrac;
         }
     }
 
     public void hoditKostkou() {
-        if(!byloHozeno) {
-            byloHozeno = true;
-            hod = kostka.hod();
+        if(!hozeno) {
+            if(domecky.get(hrajiciHrac).figurkyDom.size() == pocetFigurek) {
+                if(znovu < 2) {
+                    znovu++;
+                    naKostce = kostka.hod();
+                    if(naKostce == kostka.getPocetStran()) {
+                        hozeno = true;
+                    }
+                }
+                else {
+                    konecTahu();
+                }
+            }
+            else {
+                hozeno = true;
+                naKostce = kostka.hod();
+            }
         }
+
     }
 
     public int kolikHozeno() {
-        return (byloHozeno) ? hod : 0;
+        return naKostce;
     }
 
     public void nasaditFigurku() {
-        if(jeVolno(praveHraje.getStartpole())) {
-            plocha[praveHraje.getStartpole()] = domecky.get(praveHraje).nasaditFigurku();
-        }
-        else if(plocha[praveHraje.getStartpole()].getBarva() != praveHraje) {
-            vyhodit(praveHraje.getStartpole());
-            plocha[praveHraje.getStartpole()] = domecky.get(praveHraje).nasaditFigurku();
+        if(naKostce == kostka.getPocetStran()) {
+            if(jeVolno(hrajiciHrac.getStartovniPole())) {
+                plocha[hrajiciHrac.getStartovniPole()] = domecky.get(hrajiciHrac).nasaditFig();
+                hozeno = false;
+                znovu = 0;
+            }
+            else if(plocha[hrajiciHrac.getStartovniPole()].getKomuPatrim() != hrajiciHrac) {
+                vyhodit(hrajiciHrac.getStartovniPole());
+                plocha[hrajiciHrac.getStartovniPole()] = domecky.get(hrajiciHrac).nasaditFig();
+                hozeno = false;
+                znovu = 0;
+            }
         }
     }
 
     public void posunFigurky(int kde) {
-        Figurka jaka = plocha[kde];
-        int kam = kde + hod;
+        if(!jeMoje(kde) || kolikHozeno() == 0) return;
 
+        Figurka fig = plocha[kde];
+        int kam = kde + naKostce;
 
-        if(!cile.get(praveHraje).jeFigurka(jaka)) {
-            if(kam > praveHraje.getCilpole() && kde < praveHraje.getCilpole()) {
-                int kamDoCile = kam - praveHraje.getCilpole() - 1;
-                if(cile.get(praveHraje).Volno(kamDoCile)) {
-                    cile.get(praveHraje).DoDomecku(jaka, kamDoCile);
-                    plocha[kde] = null;
-                }
-            }
-            else if(jeVolno(spocitanaCesta(kam))) {
-                plocha[spocitanaCesta(kam)] = jaka;
+        if(kam > hrajiciHrac.getVstupDoCile() && kde <= hrajiciHrac.getVstupDoCile()) {
+            int kamDoCile = kam - hrajiciHrac.getVstupDoCile() - 1;
+            if(cile.get(hrajiciHrac).jeVolno(kamDoCile)) {
+                cile.get(hrajiciHrac).jitDoCile(fig, kamDoCile);
                 plocha[kde] = null;
-            }
-            else if(plocha[spocitanaCesta(kam)].getBarva() != praveHraje) {
-                vyhodit(spocitanaCesta(kam));
-                plocha[spocitanaCesta(kam)] = jaka;
+                konecTahu();
             }
         }
-        else {
-            if(cile.get(praveHraje).Volno(kam)) {
-                // posunout v cili
+        else if(jeVolno(spocitanaCesta(kam))) {
+            plocha[spocitanaCesta(kam)] = fig;
+            plocha[kde] = null;
+            konecTahu();
+        }
+        else if(plocha[spocitanaCesta(kam)].getKomuPatrim() != hrajiciHrac) {
+            vyhodit(spocitanaCesta(kam));
+            plocha[spocitanaCesta(kam)] = fig;
+            plocha[kde] = null;
+            konecTahu();
+        }
+    }
+
+    public void posunFigurkyCil(int hrac, int kde) {
+        if(hrajiciHrac.getPoradi() == hrac) {
+            Figurka fig = plocha[kde];
+            int kam = kde + naKostce;
+
+            if(cile.get(hrajiciHrac).jeVolno(kam)) {
+                cile.get(hrajiciHrac).posunVCili(fig, kde, kam);
+                konecTahu();
             }
         }
-        byloHozeno = false;
     }
 
     public void vyhodit(int kde) {
-        Barva koho = plocha[kde].getBarva();
-        domecky.get(koho).vratitFigurku(plocha[kde]);
+        Hrac koho = plocha[kde].getKomuPatrim();
+        domecky.get(koho).vratitFig(plocha[kde]);
         plocha[kde] = null;
     }
 
     public void konecTahu() {
-        byloHozeno = false;
-        praveHraje = hraci.get(praveHraje.getPoradi() + 1);
+        if(naKostce == kostka.getPocetStran()) {
+            hozeno = false;
+            znovu = 0;
+        }
+        else {
+            if(hrajiciHrac.getPoradi() + 1 == hraci.size()) {
+                hrajiciHrac = hraci.get(0);
+            }
+            else {
+                hrajiciHrac = hraci.get(hrajiciHrac.getPoradi() + 1);
+            }
+            hozeno = false;
+            znovu = 0;
+        }
+
     }
 
     public void konecHry() {
@@ -138,6 +184,5 @@ public class HraciPlocha {
 
     public int spocitanaCesta(int kam) {
         return (kam > delkaPlochy - 1) ? kam - delkaPlochy : kam;
-
     }
 }

@@ -2,16 +2,22 @@ package com.company.model;
 
 import java.util.Random;
 
-public class Kostka {
-
+public class Kostka
+{
     private Random random = new Random();
 
-    private int pocetSten;
+    private int pocetStran;
+
+    public int getPocetStran()
+    {
+        return pocetStran;
+    }
 
     public Kostka(int strany){
-        pocetSten = strany;
+        pocetStran = strany;
     }
+
     public int hod() {
-        return random.nextInt(pocetSten)+1;
+        return random.nextInt(pocetStran)+1;
     }
 }

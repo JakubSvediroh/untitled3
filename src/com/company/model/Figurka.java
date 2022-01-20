@@ -1,14 +1,11 @@
 package com.company.model;
 
-public class Figurka {
+public class Figurka
+{
+    private Hrac komuPatrim;
+    public Hrac getKomuPatrim() {return komuPatrim;}
 
-    private Barva barva;
-
-    public Figurka (Barva barvicka){
-        barva = barvicka;
-    }
-
-    public Barva getBarva() {
-        return barva;
+    public Figurka(Hrac b) {
+        komuPatrim = b;
     }
 }
